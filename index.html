@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name = "viewport" content="width=device-width, initial-scale-1.0"> <!--possibly to define the screen in which the content is displayed?-->
+        <title>Weather App</title>
+        <link rel = "stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="card">
+            <div class="search">
+                <input type="text" placeholder="enter city name" spellcheck="false">
+                <button><img src="images/search.png"></button>
+            </div>
+            <div class = "error">
+                <p>Invalid City Name</p>
+            </div>
+            <div class="weather">
+                <img src="images/rain.png" class="weather-icon">
+                <h1 class = "temp">22°F</h1>
+                <h2 class="city">New York</h2>
+                <div class="details">
+                    <div class="col">
+                        <img src="images/humidity.png">
+                        <div>
+                            <p class="humidity">50%</p>
+                            <p>Humidity</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <img src="images/wind.png">
+                        <div>
+                            <p class="wind">15 mph</p>
+                            <p>Wind Speed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+
+            const apiKey = "c8abc0237120b7166f71ab69daaee085";
+            const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=imperial&q=";
+            const searchBox = document.querySelector(".search input");
+            const searchBtn = document.querySelector(".search button");
+            async function checkWeather(city){
+                const response = await fetch(apiUrl + city+ `&appid=${apiKey}`);
+
+                if (response.status ===404){
+                    document.querySelector(".error").style.display="block";
+                    document.querySelector(".weather").style.display="none";
+                }
+                else{
+                    document.querySelector(".error").style.display="none";
+                
+
+                    var data = await response.json();
+
+                    document.querySelector(".city").innerHTML = data.name;
+                    document.querySelector(".temp").innerHTML = Math.round(data.main.temp) +"°F";
+                    document.querySelector(".humidity").innerHTML = data.main.humidity+"%";
+                    document.querySelector(".wind").innerHTML = data.wind.speed+" mph";
+                    var img;
+                    console.log(data.weather[0].main);
+                    switch(data.weather[0].main){ 
+                        case "Clouds":
+                            img = "images/clouds.png";
+                            break;
+                        case "Rain":
+                            img = "images/rain.png";
+                            break;
+                        case "Drizzle":
+                            img = "images/drizzle.png";
+                            break;
+                        case "Mist":
+                            img = "images/mist.png";
+                            break;
+                        case "Snow":
+                            img = "images/snow.png";
+                            break;
+                        default:
+                            img = "images/clear.png";
+                    }
+                    console.log(img);
+                    document.querySelector(".weather-icon").src = img;
+                    document.querySelector(".weather").style.display = "block";
+                }
+            }
+            searchBtn.addEventListener("click", ()=>{
+                checkWeather(searchBox.value);
+            })
+            searchBox.addEventListener('keyup', (e)=>{
+                if (e.keyCode ===13){
+                    checkWeather(searchBox.value);
+                }
+                })
+            
+            
+            
+        </script>
+
+    </body>
+</html>
